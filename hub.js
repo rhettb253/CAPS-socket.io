@@ -9,7 +9,12 @@ io.listen(3000);
 //namespace
 const caps = io.of("/caps");
 
-function pickupHandler(payload){
+function hubPickupHandler(payload){
+    logIt(payload);
+    caps.emit(payload.event, payload)
+}
+
+function hubDeliveredHandler(payload){
     logIt(payload);
     caps.emit(payload.event, payload)
 }
@@ -24,9 +29,9 @@ function handleConnection(socket) {
   console.log("We have a new connection: " + socket.id);
 //   logIt on all event occurrences
 //   socket.on("pickup", logIt);
-  socket.on("pickup", pickupHandler);
+  socket.on("pickup", hubPickupHandler);
   socket.on("in-transit", logIt);
-  socket.on("delivered", logIt);
+  socket.on("delivered", hubDeliveredHandler);
 }
 
 function startSocketServer() {
@@ -52,4 +57,9 @@ function getCurrentTime() {
 
 module.exports = {
   startSocketServer,
+  hubPickupHandler,
+  logIt,
+  hubDeliveredHandler,
+  io,
+  caps
 };
