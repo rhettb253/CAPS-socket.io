@@ -3,7 +3,10 @@ const {
     hubPickupHandler,
     io,
     caps,
+    packageQueue,
   } = require('../hub');
+  const { Queue } = require('../hub/handlers');
+  const payload = { event: 'pickup', data: {orderId: 1} };
 
   describe('test hub functionality', ()=>{
 
@@ -13,12 +16,12 @@ const {
         expect(mockLog).toHaveBeenCalledWith('The Socket Server has started!');
     });
 
-    test('hubPickupHandler takes in and emits a payload', ()=>{
-        const payload = { event: 'pickup', orderId: 1 };
-        let spyEmit = jest.spyOn(caps, 'emit');
+    test('hubPickupHandler adds to packageQueue when driverQueue is empty', ()=>{
+        let driverQueue = new Queue();
+        let spyLog = jest.spyOn(console, 'log');
         hubPickupHandler(payload);
-        expect(spyEmit).toHaveBeenCalledWith('pickup', payload);
-    })
+        expect(spyLog).toHaveBeenCalledWith('Order 1 is waiting for an eligible driver');
+    });
 
    io.close() 
   })
